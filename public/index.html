@@ -328,10 +328,33 @@ async function loadMonthDays() {
   render();
 }
 
+let searchTimeout = null;
 async function searchPatients(query) {
-  if (query.length < 2) { state.suggestions = []; render(); return; }
-  state.suggestions = await api.get(`/api/patients/search?q=${encodeURIComponent(query)}`);
-  render();
+  clearTimeout(searchTimeout);
+  if (query.length < 2) {
+    state.suggestions = [];
+    const el = document.getElementById('suggestions-box');
+    if (el) el.innerHTML = '';
+    return;
+  }
+  searchTimeout = setTimeout(async () => {
+    state.suggestions = await api.get(`/api/patients/search?q=${encodeURIComponent(query)}`);
+    const el = document.getElementById('suggestions-box');
+    if (el) {
+      if (state.suggestions.length > 0) {
+        el.style.display = 'block';
+        el.innerHTML = state.suggestions.map(s =>
+          `<div class="suggestion-item" onclick="selectPatient(${s.id}, '${s.name.replace(/'/g, "\\'")}', '${(s.phone || '').replace(/'/g, "\\'")}')">
+            <div class="suggestion-name">${s.name}</div>
+            ${s.phone ? `<div class="suggestion-phone">${s.phone}</div>` : ''}
+          </div>`
+        ).join('');
+      } else {
+        el.innerHTML = '';
+        el.style.display = 'none';
+      }
+    }
+  }, 300);
 }
 
 // ─── Actions ───
@@ -587,15 +610,7 @@ function renderForm() {
   const comment = a ? (a.comment || '') : '';
   const patientId = a ? a.patient_id : '';
 
-  let suggestionsHtml = '';
-  if (state.suggestions.length > 0) {
-    suggestionsHtml = `<div class="suggestions">${state.suggestions.map(s =>
-      `<div class="suggestion-item" onclick="selectPatient(${s.id}, '${s.name.replace(/'/g, "\\'")}', '${(s.phone || '').replace(/'/g, "\\'")}')">
-        <div class="suggestion-name">${s.name}</div>
-        ${s.phone ? `<div class="suggestion-phone">${s.phone}</div>` : ''}
-      </div>`
-    ).join('')}</div>`;
-  }
+  let suggestionsHtml = '<div id="suggestions-box" class="suggestions" style="display:none"></div>';
 
   return `
     <div class="modal-overlay" onclick="if(event.target===this){state.modal=null;state.editAppt=null;render()}">
@@ -647,13 +662,8 @@ function selectPatient(id, name, phone) {
   document.getElementById('f-phone').value = phone;
   document.getElementById('f-patient-id').value = id;
   state.suggestions = [];
-  render();
-  // Restore values after re-render
-  setTimeout(() => {
-    document.getElementById('f-name').value = name;
-    document.getElementById('f-phone').value = phone;
-    document.getElementById('f-patient-id').value = id;
-  }, 10);
+  const el = document.getElementById('suggestions-box');
+  if (el) { el.innerHTML = ''; el.style.display = 'none'; }
 }
 
 function submitForm() {

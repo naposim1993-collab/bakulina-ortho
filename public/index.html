@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#6B5B7B" />
+  <title>Bakulina Ortho</title>
+  <link rel="manifest" href="/manifest.json" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #6B5B7B;
+      --primary-light: #8A7A9E;
+      --primary-bg: #EDEAF2;
+      --bg: #FAFAFA;
+      --card: #FFFFFF;
+      --text: #2D2D2D;
+      --text-muted: #888888;
+      --border: #E8E8E8;
+      --success-bg: #E8F5E9;
+      --warning-bg: #FFF3E0;
+      --danger-bg: #FFEBEE;
+      --danger: #E57373;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: rgba(255,255,255,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 700;
+    }
+    .header-title { font-size: 18px; font-weight: 700; }
+    .header-sub { font-size: 12px; opacity: 0.8; }
+    .header-actions { display: flex; gap: 8px; }
+    .header-btn {
+      background: rgba(255,255,255,0.2); border: none; border-radius: 10px;
+      width: 40px; height: 40px; font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+    }
+    .header-btn:active { background: rgba(255,255,255,0.35); }
+
+    /* Day header */
+    .day-header {
+      display: flex; align-items: center; gap: 14px;
+      padding: 20px 20px 8px; cursor: pointer;
+    }
+    .day-big { font-size: 42px; font-weight: 800; color: var(--primary); line-height: 1; }
+    .day-week { font-size: 16px; font-weight: 700; }
+    .day-month { font-size: 13px; color: var(--text-muted); }
+    .day-count {
+      margin-left: auto; font-size: 13px; color: var(--primary);
+      background: var(--primary-bg); padding: 4px 12px; border-radius: 20px; font-weight: 600;
+    }
+
+    /* Day nav */
+    .day-nav { display: flex; gap: 8px; padding: 8px 20px 16px; }
+    .day-nav-btn {
+      flex: 1; background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 8px 0; font-size: 13px;
+      color: var(--primary); font-weight: 600; cursor: pointer;
+      font-family: inherit;
+    }
+    .day-nav-btn:active { background: var(--primary-bg); }
+
+    /* Card */
+    .list { padding: 0 20px; padding-bottom: 90px; }
+    .card {
+      background: var(--card); border-radius: 14px; padding: 16px;
+      margin-bottom: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      border-left: 4px solid var(--primary);
+    }
+    .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .card-time { font-size: 15px; font-weight: 700; }
+    .status-badge {
+      font-size: 12px; padding: 3px 10px; border-radius: 20px;
+      cursor: pointer; font-weight: 600; border: none; font-family: inherit;
+    }
+    .status-pending { background: var(--warning-bg); }
+    .status-confirmed { background: var(--success-bg); }
+    .status-cancelled { background: var(--danger-bg); }
+    .card-name { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+    .card-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap; }
+    .type-badge {
+      font-size: 12px; padding: 3px 10px; border-radius: 8px; font-weight: 600;
+      background: rgba(107,91,123,0.1); color: var(--primary);
+    }
+    .card-price { font-size: 14px; font-weight: 700; color: var(--primary); }
+    .card-phone { font-size: 13px; color: #666; margin-bottom: 3px; }
+    .card-comment { font-size: 13px; color: var(--text-muted); font-style: italic; }
+    .card-telegram { font-size: 12px; color: #0088cc; margin-bottom: 3px; }
+    .card-actions { margin-top: 10px; display: flex; gap: 8px; }
+    .btn-edit {
+      background: none; border: 1px solid #ddd; border-radius: 8px;
+      padding: 6px 16px; font-size: 13px; color: var(--primary);
+      cursor: pointer; font-weight: 600; font-family: inherit;
+    }
+    .btn-link {
+      background: none; border: 1px solid #0088cc; border-radius: 8px;
+      padding: 6px 12px; font-size: 13px; color: #0088cc;
+      cursor: pointer; font-weight: 600; font-family: inherit;
+      text-decoration: none;
+    }
+
+    /* Empty */
+    .empty { text-align: center; padding: 48px 20px; }
+    .empty-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-text { font-size: 15px; color: var(--text-muted); }
+
+    /* FAB */
+    .fab {
+      position: fixed; bottom: 24px; right: 20px;
+      width: 56px; height: 56px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff; font-size: 32px; border: none; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(107,91,123,0.4);
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1; z-index: 10;
+    }
+    .fab:active { transform: scale(0.95); }
+
+    /* Calendar */
+    .calendar { padding: 16px 20px; background: var(--card); border-bottom: 1px solid #eee; }
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .cal-nav {
+      background: none; border: none; font-size: 24px; cursor: pointer;
+      color: var(--primary); padding: 4px 12px;
+    }
+    .cal-title { font-size: 17px; font-weight: 700; }
+    .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 8px; }
+    .cal-day-label { text-align: center; font-size: 12px; font-weight: 600; color: #999; padding: 4px; }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+    .cal-cell {
+      text-align: center; padding: 8px 0; border-radius: 10px; font-size: 14px;
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+      min-height: 36px; cursor: pointer;
+    }
+    .cal-cell-selected { background: var(--primary); color: #fff; font-weight: 700; }
+    .cal-cell-today { background: var(--primary-bg); font-weight: 700; color: var(--primary); }
+    .cal-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--primary); }
+    .cal-cell-selected .cal-dot { background: #fff; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.4); z-index: 100;
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .modal-card {
+      background: #fff; border-radius: 20px 20px 0 0;
+      padding: 24px 20px 32px; width: 100%; max-width: 430px;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-title { font-size: 18px; font-weight: 700; }
+    .modal-close {
+      background: #f5f5f5; border: none; border-radius: 50%;
+      width: 32px; height: 32px; font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Form */
+    .form-label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 4px; display: block; margin-top: 12px; }
+    .form-input {
+      width: 100%; padding: 10px 14px; border: 2px solid var(--border);
+      border-radius: 10px; font-size: 15px; outline: none;
+      font-family: inherit; transition: border-color 0.2s;
+    }
+    .form-input:focus { border-color: var(--primary-light); }
+    .form-row { display: flex; gap: 12px; }
+    .form-half { flex: 1; }
+
+    .btn-save {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 20px;
+      font-family: inherit;
+    }
+    .btn-save:active { opacity: 0.9; }
+    .btn-delete {
+      width: 100%; padding: 12px; background: none;
+      color: var(--danger); border: 1px solid var(--danger);
+      border-radius: 12px; font-size: 14px; font-weight: 600;
+      cursor: pointer; margin-top: 10px; font-family: inherit;
+    }
+
+    /* Patient suggestions */
+    .suggestions {
+      border: 1px solid var(--border); border-radius: 10px;
+      margin-top: 4px; max-height: 150px; overflow-y: auto;
+      background: var(--card);
+    }
+    .suggestion-item {
+      padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f5f5f5;
+      font-size: 14px;
+    }
+    .suggestion-item:last-child { border-bottom: none; }
+    .suggestion-item:active { background: var(--primary-bg); }
+    .suggestion-name { font-weight: 600; }
+    .suggestion-phone { font-size: 12px; color: var(--text-muted); }
+
+    /* QR Modal */
+    .qr-container { text-align: center; padding: 20px; }
+    .qr-container img { max-width: 250px; border-radius: 12px; }
+    .qr-link {
+      display: block; margin-top: 12px; color: #0088cc;
+      font-size: 14px; word-break: break-all;
+    }
+    .btn-copy {
+      margin-top: 12px; padding: 10px 24px;
+      background: var(--primary-bg); border: none; border-radius: 10px;
+      color: var(--primary); font-weight: 600; cursor: pointer;
+      font-family: inherit; font-size: 14px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+      background: #333; color: #fff; padding: 10px 20px; border-radius: 10px;
+      font-size: 14px; z-index: 200; opacity: 0; transition: opacity 0.3s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
+
+    /* Loading */
+    .loading { text-align: center; padding: 40px; color: var(--text-muted); }
+
+    @media (min-width: 431px) {
+      body { border-left: 1px solid #eee; border-right: 1px solid #eee; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="app"></div>
+<div id="toast" class="toast"></div>
+
+<script>
+// ─── State ───
+const state = {
+  selectedDate: new Date(),
+  appointments: [],
+  monthDays: {},
+  view: 'day', // day | calendar
+  modal: null, // null | 'form' | 'qr' | 'patient-qr'
+  editAppt: null,
+  patients: [],
+  suggestions: [],
+  qrData: null,
+  loading: false,
+};
+
+const DAYS_UA = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Нд'];
+const MONTHS_UA = ['Січень', 'Лютий', 'Березень', 'Квітень', 'Травень', 'Червень',
+  'Липень', 'Серпень', 'Вересень', 'Жовтень', 'Листопад', 'Грудень'];
+const STATUS = {
+  pending: { icon: '⏳', label: 'Очікує', cls: 'status-pending' },
+  confirmed: { icon: '✅', label: 'Підтверджено', cls: 'status-confirmed' },
+  cancelled: { icon: '❌', label: 'Скасовано', cls: 'status-cancelled' },
+};
+
+const fmt2 = n => String(n).padStart(2, '0');
+const dateKey = d => `${d.getFullYear()}-${fmt2(d.getMonth()+1)}-${fmt2(d.getDate())}`;
+const todayKey = dateKey(new Date());
+
+// ─── API ───
+const api = {
+  async get(url) { const r = await fetch(url); return r.json(); },
+  async post(url, data) {
+    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    return r.json();
+  },
+  async put(url, data) {
+    const r = await fetch(url, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    return r.json();
+  },
+  async patch(url, data) {
+    const r = await fetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    return r.json();
+  },
+  async del(url) {
+    const r = await fetch(url, { method: 'DELETE' });
+    return r.json();
+  },
+};
+
+// ─── Data loading ───
+async function loadDayAppointments() {
+  const key = dateKey(state.selectedDate);
+  state.appointments = await api.get(`/api/appointments?date=${key}`);
+  render();
+}
+
+async function loadMonthDays() {
+  const y = state.selectedDate.getFullYear();
+  const m = state.selectedDate.getMonth() + 1;
+  const days = await api.get(`/api/appointments/month?year=${y}&month=${m}`);
+  state.monthDays = {};
+  days.forEach(d => { state.monthDays[d.date] = d.count; });
+  render();
+}
+
+async function searchPatients(query) {
+  if (query.length < 2) { state.suggestions = []; render(); return; }
+  state.suggestions = await api.get(`/api/patients/search?q=${encodeURIComponent(query)}`);
+  render();
+}
+
+// ─── Actions ───
+async function changeStatus(id, newStatus) {
+  await api.patch(`/api/appointments/${id}/status`, { status: newStatus });
+  await loadDayAppointments();
+  toast(STATUS[newStatus].icon + ' ' + STATUS[newStatus].label);
+}
+
+async function deleteAppointment(id) {
+  if (!confirm('Видалити цей запис?')) return;
+  await api.del(`/api/appointments/${id}`);
+  state.modal = null;
+  state.editAppt = null;
+  await loadDayAppointments();
+  await loadMonthDays();
+  toast('Запис видалено');
+}
+
+async function saveAppointment(formData) {
+  const key = dateKey(state.selectedDate);
+  let patientId = formData.patient_id;
+
+  // Create new patient if needed
+  if (!patientId) {
+    const patient = await api.post('/api/patients', {
+      name: formData.patientName,
+      phone: formData.phone,
+    });
+    patientId = patient.id;
+  } else {
+    // Update patient info
+    await api.put(`/api/patients/${patientId}`, {
+      name: formData.patientName,
+      phone: formData.phone,
+    });
+  }
+
+  if (formData.id) {
+    // Update existing
+    await api.put(`/api/appointments/${formData.id}`, {
+      date: key,
+      time_from: formData.timeFrom,
+      time_to: formData.timeTo,
+      visit_type: formData.visitType,
+      price: formData.price,
+      comment: formData.comment,
+      status: formData.status || 'pending',
+    });
+    toast('Запис оновлено');
+  } else {
+    // Create new
+    await api.post('/api/appointments', {
+      patient_id: patientId,
+      date: key,
+      time_from: formData.timeFrom,
+      time_to: formData.timeTo,
+      visit_type: formData.visitType,
+      price: formData.price,
+      comment: formData.comment,
+    });
+    toast('Запис додано');
+  }
+
+  state.modal = null;
+  state.editAppt = null;
+  await loadDayAppointments();
+  await loadMonthDays();
+}
+
+async function showBotQR() {
+  state.qrData = await api.get('/api/telegram/qr');
+  state.modal = 'qr';
+  render();
+}
+
+async function showPatientQR(patientId) {
+  state.qrData = await api.get(`/api/telegram/link/${patientId}`);
+  state.modal = 'patient-qr';
+  render();
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+// ─── Navigate ───
+function goDay(offset) {
+  const d = new Date(state.selectedDate);
+  d.setDate(d.getDate() + offset);
+  state.selectedDate = d;
+  loadDayAppointments();
+  loadMonthDays();
+}
+
+function goToday() {
+  state.selectedDate = new Date();
+  loadDayAppointments();
+  loadMonthDays();
+}
+
+function selectDate(year, month, day) {
+  state.selectedDate = new Date(year, month, day);
+  state.view = 'day';
+  loadDayAppointments();
+  loadMonthDays();
+}
+
+// ─── Render ───
+function render() {
+  const app = document.getElementById('app');
+  app.innerHTML = renderHeader() +
+    (state.view === 'calendar' ? renderCalendar() : renderDayView()) +
+    (state.modal === 'form' ? renderForm() : '') +
+    (state.modal === 'qr' || state.modal === 'patient-qr' ? renderQRModal() : '');
+}
+
+function renderHeader() {
+  return `
+    <div class="header">
+      <div class="header-left">
+        <div class="logo">B</div>
+        <div>
+          <div class="header-title">Bakulina Ortho</div>
+          <div class="header-sub">Запис пацієнтів</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn" onclick="showBotQR()" title="QR бота">🤖</button>
+        <button class="header-btn" onclick="state.view = state.view === 'day' ? 'calendar' : 'day'; render()">
+          ${state.view === 'day' ? '📅' : '📋'}
+        </button>
+      </div>
+    </div>`;
+}
+
+function renderCalendar() {
+  const d = state.selectedDate;
+  const year = d.getFullYear();
+  const month = d.getMonth();
+  const firstDay = new Date(year, month, 1);
+  let startDay = firstDay.getDay() - 1;
+  if (startDay < 0) startDay = 6;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const selKey = dateKey(d);
+
+  let cells = '';
+  for (let i = 0; i < startDay; i++) cells += '<div class="cal-cell"></div>';
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dk = `${year}-${fmt2(month+1)}-${fmt2(day)}`;
+    const isSel = dk === selKey;
+    const isToday = dk === todayKey;
+    const hasAppts = state.monthDays[dk] > 0;
+    const cls = isSel ? 'cal-cell cal-cell-selected' : isToday ? 'cal-cell cal-cell-today' : 'cal-cell';
+    cells += `<div class="${cls}" onclick="selectDate(${year},${month},${day})">
+      <span>${day}</span>
+      ${hasAppts ? '<div class="cal-dot"></div>' : ''}
+    </div>`;
+  }
+
+  return `
+    <div class="calendar">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="state.selectedDate = new Date(${year},${month-1},1); loadMonthDays(); render()">‹</button>
+        <span class="cal-title">${MONTHS_UA[month]} ${year}</span>
+        <button class="cal-nav" onclick="state.selectedDate = new Date(${year},${month+1},1); loadMonthDays(); render()">›</button>
+      </div>
+      <div class="cal-days">${DAYS_UA.map(d => `<div class="cal-day-label">${d}</div>`).join('')}</div>
+      <div class="cal-grid">${cells}</div>
+    </div>`;
+}
+
+function renderDayView() {
+  const d = state.selectedDate;
+  const dayOfWeek = DAYS_UA[(d.getDay() + 6) % 7];
+  const dayNum = d.getDate();
+  const monthName = MONTHS_UA[d.getMonth()];
+  const count = state.appointments.length;
+  const countLabel = count === 1 ? 'запис' : count < 5 ? 'записи' : 'записів';
+
+  let cards = '';
+  if (count === 0) {
+    cards = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">Немає записів на цей день</div></div>`;
+  } else {
+    cards = state.appointments.map(a => renderCard(a)).join('');
+  }
+
+  return `
+    <div class="day-header" onclick="state.view = 'calendar'; loadMonthDays(); render()">
+      <div class="day-big">${dayNum}</div>
+      <div>
+        <div class="day-week">${dayOfWeek}</div>
+        <div class="day-month">${monthName} ${d.getFullYear()}</div>
+      </div>
+      <div class="day-count">${count} ${countLabel}</div>
+    </div>
+    <div class="day-nav">
+      <button class="day-nav-btn" onclick="goDay(-1)">← Вчора</button>
+      <button class="day-nav-btn" onclick="goToday()">Сьогодні</button>
+      <button class="day-nav-btn" onclick="goDay(1)">Завтра →</button>
+    </div>
+    <div class="list">${cards}</div>
+    <button class="fab" onclick="state.editAppt = null; state.modal = 'form'; state.suggestions = []; render()">+</button>`;
+}
+
+function renderCard(a) {
+  const st = STATUS[a.status] || STATUS.pending;
+  const nextStatus = a.status === 'pending' ? 'confirmed' : a.status === 'confirmed' ? 'cancelled' : 'pending';
+  const hasTelegram = !!a.patient_telegram;
+
+  return `
+    <div class="card">
+      <div class="card-top">
+        <div class="card-time">${a.time_from} — ${a.time_to}</div>
+        <button class="status-badge ${st.cls}" onclick="changeStatus(${a.id}, '${nextStatus}')">
+          ${st.icon} ${st.label}
+        </button>
+      </div>
+      <div class="card-name">${a.patient_name}</div>
+      <div class="card-meta">
+        ${a.visit_type ? `<span class="type-badge">${a.visit_type}</span>` : ''}
+        ${a.price ? `<span class="card-price">${a.price} грн</span>` : ''}
+      </div>
+      ${a.patient_phone ? `<div class="card-phone">📞 ${a.patient_phone}</div>` : ''}
+      ${hasTelegram ? `<div class="card-telegram">✈️ Telegram підключено</div>` : ''}
+      ${a.comment ? `<div class="card-comment">💬 ${a.comment}</div>` : ''}
+      <div class="card-actions">
+        <button class="btn-edit" onclick='editAppt(${JSON.stringify(a).replace(/'/g, "\\'")})'>Редагувати</button>
+        ${!hasTelegram ? `<button class="btn-link" onclick="showPatientQR(${a.patient_id})">📲 Telegram</button>` : ''}
+      </div>
+    </div>`;
+}
+
+function editAppt(a) {
+  state.editAppt = a;
+  state.modal = 'form';
+  state.suggestions = [];
+  render();
+}
+
+function renderForm() {
+  const a = state.editAppt;
+  const isEdit = !!a;
+  const name = a ? a.patient_name : '';
+  const phone = a ? (a.patient_phone || '') : '';
+  const timeFrom = a ? a.time_from : '09:00';
+  const timeTo = a ? a.time_to : '10:00';
+  const visitType = a ? (a.visit_type || '') : '';
+  const price = a ? (a.price || '') : '';
+  const comment = a ? (a.comment || '') : '';
+  const patientId = a ? a.patient_id : '';
+
+  let suggestionsHtml = '';
+  if (state.suggestions.length > 0) {
+    suggestionsHtml = `<div class="suggestions">${state.suggestions.map(s =>
+      `<div class="suggestion-item" onclick="selectPatient(${s.id}, '${s.name.replace(/'/g, "\\'")}', '${(s.phone || '').replace(/'/g, "\\'")}')">
+        <div class="suggestion-name">${s.name}</div>
+        ${s.phone ? `<div class="suggestion-phone">${s.phone}</div>` : ''}
+      </div>`
+    ).join('')}</div>`;
+  }
+
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this){state.modal=null;state.editAppt=null;render()}">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">${isEdit ? 'Редагувати запис' : 'Новий запис'}</h3>
+          <button class="modal-close" onclick="state.modal=null;state.editAppt=null;render()">✕</button>
+        </div>
+
+        <label class="form-label">ПІБ пацієнта</label>
+        <input class="form-input" id="f-name" value="${name}" placeholder="Прізвище Ім'я По батькові"
+          oninput="searchPatients(this.value)" autocomplete="off" />
+        <input type="hidden" id="f-patient-id" value="${patientId}" />
+        ${suggestionsHtml}
+
+        <label class="form-label">Телефон</label>
+        <input class="form-input" id="f-phone" value="${phone}" placeholder="0661234567" type="tel" />
+
+        <div class="form-row">
+          <div class="form-half">
+            <label class="form-label">Початок</label>
+            <input class="form-input" id="f-from" type="time" value="${timeFrom}" />
+          </div>
+          <div class="form-half">
+            <label class="form-label">Кінець</label>
+            <input class="form-input" id="f-to" type="time" value="${timeTo}" />
+          </div>
+        </div>
+
+        <label class="form-label">Тип візиту</label>
+        <input class="form-input" id="f-type" value="${visitType}" placeholder="Наприклад: корекція, консультація..." />
+
+        <label class="form-label">Ціна (грн)</label>
+        <input class="form-input" id="f-price" value="${price}" placeholder="0" type="number" />
+
+        <label class="form-label">Коментар</label>
+        <textarea class="form-input" id="f-comment" placeholder="Додатковий коментар..." style="min-height:70px;resize:vertical">${comment}</textarea>
+
+        <button class="btn-save" onclick="submitForm()">
+          ${isEdit ? 'Зберегти зміни' : 'Додати запис'}
+        </button>
+        ${isEdit ? `<button class="btn-delete" onclick="deleteAppointment(${a.id})">Видалити запис</button>` : ''}
+      </div>
+    </div>`;
+}
+
+function selectPatient(id, name, phone) {
+  document.getElementById('f-name').value = name;
+  document.getElementById('f-phone').value = phone;
+  document.getElementById('f-patient-id').value = id;
+  state.suggestions = [];
+  render();
+  // Restore values after re-render
+  setTimeout(() => {
+    document.getElementById('f-name').value = name;
+    document.getElementById('f-phone').value = phone;
+    document.getElementById('f-patient-id').value = id;
+  }, 10);
+}
+
+function submitForm() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { toast('Введіть ПІБ пацієнта'); return; }
+
+  saveAppointment({
+    id: state.editAppt ? state.editAppt.id : null,
+    patient_id: document.getElementById('f-patient-id').value || null,
+    patientName: name,
+    phone: document.getElementById('f-phone').value.trim(),
+    timeFrom: document.getElementById('f-from').value,
+    timeTo: document.getElementById('f-to').value,
+    visitType: document.getElementById('f-type').value.trim(),
+    price: document.getElementById('f-price').value.trim(),
+    comment: document.getElementById('f-comment').value.trim(),
+    status: state.editAppt ? state.editAppt.status : 'pending',
+  });
+}
+
+function renderQRModal() {
+  if (!state.qrData) return '';
+  const isPatient = state.modal === 'patient-qr';
+  const title = isPatient ? 'Посилання для пацієнта' : 'QR-код бота';
+  const desc = isPatient
+    ? 'Надішліть це посилання пацієнту, щоб підключити Telegram-нагадування'
+    : 'Роздрукуйте або покажіть пацієнтам для підключення нагадувань';
+
+  return `
+    <div class="modal-overlay" onclick="if(event.target===this){state.modal=null;render()}">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">${title}</h3>
+          <button class="modal-close" onclick="state.modal=null;render()">✕</button>
+        </div>
+        <div class="qr-container">
+          <img src="${state.qrData.qr}" alt="QR Code" />
+          <a class="qr-link" href="${state.qrData.link}" target="_blank">${state.qrData.link}</a>
+          <p style="margin-top:12px;font-size:13px;color:#888">${desc}</p>
+          <button class="btn-copy" onclick="navigator.clipboard.writeText('${state.qrData.link}');toast('Посилання скопійовано')">
+            📋 Копіювати посилання
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ─── Init ───
+loadDayAppointments();
+loadMonthDays();
+</script>
+
+</body>
+</html>
